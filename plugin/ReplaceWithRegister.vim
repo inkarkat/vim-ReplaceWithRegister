@@ -57,6 +57,16 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.03.010	07-Jan-2011	ENH: Better handling when buffer is
+"				'nomodifiable' or 'readonly'. Using the trick of
+"				prepending a no-op buffer modification before
+"				invoking the functions. Using try...catch inside
+"				s:ReplaceWithRegister() would break the needed
+"				abort inside the :normal sequence of replacing
+"				the selection, then inserting the register. The
+"				disastrous result would be erroneous
+"				interpretation of <C-O> as a normal mode
+"				command! 
 "   1.02.009	25-Nov-2009	Replaced the <SID>Count workaround with
 "				:map-expr and an intermediate
 "				s:ReplaceWithRegisterOperatorExpression. 
@@ -108,51 +118,31 @@ function! s:ReplaceWithRegister( type )
     " because s:register is undefined. 
     "unlet s:register
 
-    try
-	if a:type ==# 'visual'
-	    " Note: The 'cc' command (and thus also 'c' on a linewise visual
-	    " selection) preserves the indent of the first line if 'autoindent' is
-	    " on (cp. :help cc), or if there is an 'indentexpr'. As we want a
-	    " replacement exactly inside the former visual selection, we temporarily
-	    " turn off all these things by setting 'paste'. 
-	    setlocal paste
-	    try
-		if ! &l:modifiable
-		    " XXX: If there's an error in a normal mode command,
-		    " execution should stop; however Vim 7.3 on Windows and Vim
-		    " 7.3.98 on Linux apparently do not do this when the buffer
-		    " is 'nomodifiable'; instead, they execute <C-O> as a normal
-		    " mode mapping and jump around. 
-		    " We work around this via an explicit check for
-		    " 'nomodifiable' and then forcing the Vim error. 
-		    normal! gvgu
-		endif
-
-		execute 'normal! gv' . l:replaceOnVisualSelectionCommand
-	    finally
-		setlocal nopaste
-	    endtry
-	else
-	    " Note: :normal! `[c`] would keep the last moved-over character, as 'c'
-	    " changes until the mark, but does not include it. The easiest way to get
-	    " around this is to first establish a visual selection, then change that.
-	    " However, even here we need to make sure to be "inclusive"! 
-	    let l:save_selection = &selection
-	    set selection=inclusive
-	    try
-		execute 'normal! `[v`]' . l:replaceOnVisualSelectionCommand
-	    finally
-		let &selection = l:save_selection
-	    endtry
-	endif
-    catch /^Vim\%((\a\+)\)\=:E/
-	" v:exception contains what is normally in v:errmsg, but with extra
-	" exception source info prepended, which we cut away. 
-	let v:errmsg = substitute(v:exception, '^Vim\%((\a\+)\)\=:', '', '')
-	echohl ErrorMsg
-	echomsg v:errmsg
-	echohl None
-    endtry
+    if a:type == 'visual'
+	" Note: The 'cc' command (and thus also 'c' on a linewise visual
+	" selection) preserves the indent of the first line if 'autoindent' is
+	" on (cp. :help cc), or if there is an 'indentexpr'. As we want a
+	" replacement exactly inside the former visual selection, we temporarily
+	" turn off all these things by setting 'paste'. 
+	setlocal paste
+	try
+	    execute 'normal! gv' . l:replaceOnVisualSelectionCommand
+	finally
+	    setlocal nopaste
+	endtry
+    else
+	" Note: :normal! `[c`] would keep the last moved-over character, as 'c'
+	" changes until the mark, but does not include it. The easiest way to get
+	" around this is to first establish a visual selection, then change that.
+	" However, even here we need to make sure to be "inclusive"! 
+	let l:save_selection = &selection
+	set selection=inclusive
+	try
+	    execute 'normal! `[v`]' . l:replaceOnVisualSelectionCommand
+	finally
+	    let &selection = l:save_selection
+	endtry
+    endif
 endfunction
 function! s:ReplaceWithRegisterOperator( type )
     let l:pasteText = getreg(s:register)
@@ -188,9 +178,9 @@ nnoremap <expr> <Plug>ReplaceWithRegisterOperator <SID>ReplaceWithRegisterOperat
 " This mapping needs repeat.vim to be repeatable, because it contains of
 " multiple steps (visual selection + 'c' command inside
 " s:ReplaceWithRegisterOperator). 
-nnoremap <silent> <Plug>ReplaceWithRegisterLine :<C-u>call <SID>SetRegister()<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual')<Bar>silent! call repeat#set("\<lt>Plug>ReplaceWithRegisterLine")<CR>
+nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual')<Bar>silent! call repeat#set("\<lt>Plug>ReplaceWithRegisterLine")<CR>
 " Repeat not defined in visual mode. 
-vnoremap <Plug>ReplaceWithRegisterOperator :<C-u>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual')<CR>
+vnoremap <Plug>ReplaceWithRegisterOperator :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual')<CR>
 
 if ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'n')
     nmap <silent> gr <Plug>ReplaceWithRegisterOperator
