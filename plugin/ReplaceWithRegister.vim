@@ -118,6 +118,8 @@ function! s:ReplaceWithRegisterOperator( type )
 	    call setreg(s:register, l:pasteText, l:regType)
 	endif
     endtry
+
+    silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterOperator")
 endfunction
 function! s:ReplaceWithRegisterOperatorExpression( opfunc )
     call s:SetRegister()
@@ -133,7 +135,10 @@ nnoremap <expr> <Plug>ReplaceWithRegisterOperator <SID>ReplaceWithRegisterOperat
 " s:ReplaceWithRegisterOperator). 
 nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual')<Bar>silent! call repeat#set("\<lt>Plug>ReplaceWithRegisterLine")<CR>
 " Repeat not defined in visual mode. 
-vnoremap <Plug>ReplaceWithRegisterOperator :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual')<CR>
+vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual')<Bar>call repeat#set("\<lt>Plug>ReplaceWithRegisterVisual")<CR>
+vnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>ReplaceWithRegisterVisual
+nnoremap <expr> <SID>Reselect '1v' . (visualmode() !=# 'V' && &selection ==# 'exclusive' ? ' ' : '')
+nnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>Reselect<SID>ReplaceWithRegisterVisual
 
 if ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'n')
     nmap <silent> gr <Plug>ReplaceWithRegisterOperator
@@ -141,8 +146,8 @@ endif
 if ! hasmapto('<Plug>ReplaceWithRegisterLine', 'n')
     nmap <silent> grr <Plug>ReplaceWithRegisterLine
 endif
-if ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'x')
-    xmap <silent> gr <Plug>ReplaceWithRegisterOperator
+if ! hasmapto('<Plug>ReplaceWithRegisterVisual', 'x')
+    xmap <silent> gr <Plug>ReplaceWithRegisterVisual
 endif
 
 " vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
