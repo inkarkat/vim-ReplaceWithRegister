@@ -1,55 +1,8 @@
 " ReplaceWithRegister.vim: Replace text with the contents of a register. 
 "
-" DESCRIPTION:
-"   Replacing an existing text with the contents of a register is a very common
-"   task during editing. One typically first deletes the existing text via the
-"   |d|, |D| or |dd| commands, then pastes the register with |p| or |P|. 
-"   Most of the time, the unnamed register is involved, with the following
-"   pitfall: If you forget to delete into the black-hole register ("_), the
-"   replacement text is overwritten! 
-"
-"   This plugin offers a two-in-one command that replaces text covered by a
-"   {motion}, entire line(s) or the current selection with the contents of a
-"   register; the old text is deleted into the black-hole register. 
-"
-"   The replacement mode (characters or entire lines) is determined by the
-"   replacement command / selection, not by the register contents. This avoids
-"   surprises like when the replacement text was a linewise yank, but the
-"   replacement is characterwise: In this case, no additional newline is
-"   inserted. 
-"
-" USAGE:
-"["x][count]gr{motion}	Replace {motion} text with the contents of register x. 
-"			Especially when using the unnamed register, this is
-"			quicker than "_d{motion}P or "_c{motion}<C-R>"
-"["x][count]grr		Replace [count] lines with the contents of register x. 
-"			To replace from the cursor position to the end of the
-"			line use ["x]gr$ 
-"{Visual}["x]gr		Replace the selection with the contents of register x. 
-"
-" INSTALLATION:
-"   Put the script into your user or system Vim plugin directory (e.g.
-"   ~/.vim/plugin). 
-
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher. 
 "   - repeat.vim (vimscript #2136) autoload script (optional). 
-"
-" CONFIGURATION:
-"   The default mappings override the (rarely used, but somewhat related) |gr|
-"   command (replace virtual characters under the cursor with {char}). 
-"   If you want to use different mappings, map your keys to the
-"   <Plug>ReplaceWithRegister... mapping targets _before_ sourcing this script
-"   (e.g. in your |vimrc|): 
-"	nmap <silent> <Leader>r <Plug>ReplaceWithRegisterOperator
-"    	nmap <silent> <Leader>rr <Plug>ReplaceWithRegisterLine
-"    	vmap <silent> <Leader>r <Plug>ReplaceWithRegisterOperator
-"
-" INTEGRATION:
-" LIMITATIONS:
-" ASSUMPTIONS:
-" KNOWN PROBLEMS:
-" TODO:
 "
 " Copyright: (C) 2008-2011 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
