@@ -3,6 +3,7 @@
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher. 
 "   - repeat.vim (vimscript #2136) autoload script (optional). 
+"   - visualrepeat.vim autoload script (optional). 
 "
 " Copyright: (C) 2008-2011 by Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'. 
@@ -10,6 +11,17 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.10.011	17-Mar-2011	Add experimental support for repeating the
+"				replacement also in visual mode through
+"				visualrepeat.vim. Renamed vmap
+"				<Plug>ReplaceWithRegisterOperator to
+"				<Plug>ReplaceWithRegisterVisual for that. 
+"				A repeat in visual mode will now apply the
+"				previous line and operator replacement to the
+"				selection text. A repeat in normal mode will
+"				apply the previous visual mode replacement at
+"				the current cursor position, using the size of
+"				the last visual selection. 
 "   1.03.010	07-Jan-2011	ENH: Better handling when buffer is
 "				'nomodifiable' or 'readonly'. Using the trick of
 "				prepending a no-op buffer modification before
@@ -97,7 +109,7 @@ function! s:ReplaceWithRegister( type )
 	endtry
     endif
 endfunction
-function! s:ReplaceWithRegisterOperator( type )
+function! s:ReplaceWithRegisterOperator( type, ... )
     let l:pasteText = getreg(s:register)
     let l:regType = getregtype(s:register)
     if l:regType ==# 'V' && l:pasteText =~# '\n$'
@@ -119,7 +131,12 @@ function! s:ReplaceWithRegisterOperator( type )
 	endif
     endtry
 
-    silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterOperator")
+    if a:0
+	silent! call repeat#set(a:1)
+	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
+    else
+	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
+    endif
 endfunction
 function! s:ReplaceWithRegisterOperatorExpression( opfunc )
     call s:SetRegister()
@@ -127,15 +144,15 @@ function! s:ReplaceWithRegisterOperatorExpression( opfunc )
     return 'g@'
 endfunction
 
-" This mapping repeats naturally, because it just sets a global things, and Vim
-" is able to repeat the g@ on its own. 
+" This mapping repeats naturally, because it just sets global things, and Vim is
+" able to repeat the g@ on its own. 
 nnoremap <expr> <Plug>ReplaceWithRegisterOperator <SID>ReplaceWithRegisterOperatorExpression('<SID>ReplaceWithRegisterOperator')
 " This mapping needs repeat.vim to be repeatable, because it contains of
 " multiple steps (visual selection + 'c' command inside
 " s:ReplaceWithRegisterOperator). 
-nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual')<Bar>silent! call repeat#set("\<lt>Plug>ReplaceWithRegisterLine")<CR>
+nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterLine")<CR>
 " Repeat not defined in visual mode. 
-vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual')<Bar>call repeat#set("\<lt>Plug>ReplaceWithRegisterVisual")<CR>
+vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
 vnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>ReplaceWithRegisterVisual
 nnoremap <expr> <SID>Reselect '1v' . (visualmode() !=# 'V' && &selection ==# 'exclusive' ? ' ' : '')
 nnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>Reselect<SID>ReplaceWithRegisterVisual
