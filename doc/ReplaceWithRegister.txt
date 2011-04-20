@@ -35,6 +35,9 @@ RELATED WORKS								     *
 
 - regreplop.vim (vimscript #2702) provides an alternative implementation of
   the same idea. 
+- operator-replace (vimscript #2782) provides replacement of {motion} only,
+  depends on another library of the author, and does not have a default
+  mapping. 
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
@@ -78,6 +81,12 @@ If you want to use different mappings, map your keys to the
 <
 ==============================================================================
 LIMITATIONS				     *ReplaceWithRegister-limitations*
+
+- The commands don't work on the readonly registers ":, "., "% and "#. "E384:
+  Invalid register name" is printed. 
+- The commands don't work on the expression register "=. Nothing is pasted. 
+- The mode cannot be set for register "/; it will always be pasted
+  characterwise. Implement a special case for glp? 
 
 KNOWN PROBLEMS				  *ReplaceWithRegister-known-problems*
 
