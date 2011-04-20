@@ -11,6 +11,10 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.10.012	18-Mar-2011	The operator-pending mapping now also handles
+"				'nomodifiable' and 'readonly' buffers without
+"				function errors. Add checking and probing inside
+"				s:ReplaceWithRegisterOperatorExpression(). 
 "   1.10.011	17-Mar-2011	Add experimental support for repeating the
 "				replacement also in visual mode through
 "				visualrepeat.vim. Renamed vmap
@@ -141,7 +145,16 @@ endfunction
 function! s:ReplaceWithRegisterOperatorExpression( opfunc )
     call s:SetRegister()
     let &opfunc = a:opfunc
-    return 'g@'
+
+    let l:keys = 'g@'
+    if ! &l:modifiable || &l:readonly
+	" Probe for "Cannot make changes" error and readonly warning via a no-op
+	" dummy modification. 
+	" In the case of a nomodifiable buffer, Vim will abort the normal mode
+	" command chain, discard the g@, and thus not invoke the operatorfunc. 
+	let l:keys = "\"=''\<CR>p" . l:keys
+    endif
+    return l:keys
 endfunction
 
 " This mapping repeats naturally, because it just sets global things, and Vim is
