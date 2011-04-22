@@ -82,49 +82,31 @@ function! s:SetRegister()
     let s:register = v:register
 endfunction
 function! s:ReplaceWithRegister( type )
-    " It is important to delete into the black hole register, otherwise, the
-    " unnamed register will be clobbered, and this may contain the text we want
-    " to paste. 
-    let l:replaceOnVisualSelectionCommand = '"_c' . "\<C-R>\<C-O>" . s:register . "\<Esc>"
-    " If s:register is removed, repeat via '.' will fail on the above line,
-    " because s:register is undefined. 
-    "unlet s:register
+    let l:save_clipboard = &clipboard
+    set clipboard= " Avoid clobbering the selection and clipboard registers. 
+    let l:save_reg = getreg('"')
+    let l:save_regmode = getregtype('"')
 
-    if a:type ==# 'visual'
-	if visualmode() ==# "\<C-v>"
-	    " On a blockwise selection, the 'cc' command performs the
-	    " CTRL-R_CTRL-O insert on each line, which is not what we want. (It
-	    " would paste "X1\nX2" as "X1\nX1X2".) Instead, we delete the block
-	    " and paste, with a special case for the first column (which I guess
-	    " is slightly easier to handle than using i/a followed by
-	    " CTRL-R_CTRL-O). 
-	    let l:replaceOnVisualSelectionCommand = '"_d"' . s:register . (col("'<") == 1 ? 'P' : 'p')
+    try
+	if a:type ==# 'visual'
+	    normal! gvp
+	else
+	    " Note: :normal! `[c`] would keep the last moved-over character, as 'c'
+	    " changes until the mark, but does not include it. The easiest way to get
+	    " around this is to first establish a visual selection, then change that.
+	    " However, even here we need to make sure to be "inclusive"! 
+	    let l:save_selection = &selection
+	    set selection=inclusive
+	    try
+		normal! `[v`]p
+	    finally
+		let &selection = l:save_selection
+	    endtry
 	endif
-
-	" Note: The 'cc' command (and thus also 'c' on a linewise visual
-	" selection) preserves the indent of the first line if 'autoindent' is
-	" on (cp. :help cc), or if there is an 'indentexpr'. As we want a
-	" replacement exactly inside the former visual selection, we temporarily
-	" turn off all these things by setting 'paste'. 
-	setlocal paste
-	try
-	    execute 'normal! gv' . l:replaceOnVisualSelectionCommand
-	finally
-	    setlocal nopaste
-	endtry
-    else
-	" Note: :normal! `[c`] would keep the last moved-over character, as 'c'
-	" changes until the mark, but does not include it. The easiest way to get
-	" around this is to first establish a visual selection, then change that.
-	" However, even here we need to make sure to be "inclusive"! 
-	let l:save_selection = &selection
-	set selection=inclusive
-	try
-	    execute 'normal! `[v`]' . l:replaceOnVisualSelectionCommand
-	finally
-	    let &selection = l:save_selection
-	endtry
-    endif
+    finally
+	call setreg('"', l:save_reg, l:save_regmode)
+	let &clipboard = l:save_clipboard
+    endtry
 endfunction
 function! s:ReplaceWithRegisterOperator( type, ... )
     let l:pasteText = getreg(s:register)
