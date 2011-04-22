@@ -11,6 +11,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.11.013	21-Apr-2011	BUG: Text duplicated from yanked previous lines
+"				is inserted on a replacement of a visual
+"				blockwise selection. Need a special case. 
 "   1.10.012	18-Mar-2011	The operator-pending mapping now also handles
 "				'nomodifiable' and 'readonly' buffers without
 "				function errors. Add checking and probing inside
@@ -87,7 +90,17 @@ function! s:ReplaceWithRegister( type )
     " because s:register is undefined. 
     "unlet s:register
 
-    if a:type == 'visual'
+    if a:type ==# 'visual'
+	if visualmode() ==# "\<C-v>"
+	    " On a blockwise selection, the 'cc' command performs the
+	    " CTRL-R_CTRL-O insert on each line, which is not what we want. (It
+	    " would paste "X1\nX2" as "X1\nX1X2".) Instead, we delete the block
+	    " and paste, with a special case for the first column (which I guess
+	    " is slightly easier to handle than using i/a followed by
+	    " CTRL-R_CTRL-O). 
+	    let l:replaceOnVisualSelectionCommand = '"_d"' . s:register . (col("'<") == 1 ? 'P' : 'p')
+	endif
+
 	" Note: The 'cc' command (and thus also 'c' on a linewise visual
 	" selection) preserves the indent of the first line if 'autoindent' is
 	" on (cp. :help cc), or if there is an 'indentexpr'. As we want a
