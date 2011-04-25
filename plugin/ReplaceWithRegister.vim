@@ -11,9 +11,17 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
-"   1.11.013	21-Apr-2011	BUG: Text duplicated from yanked previous lines
+"   1.20.013	23-Apr-2011	BUG: Text duplicated from yanked previous lines
 "				is inserted on a replacement of a visual
-"				blockwise selection. Need a special case. 
+"				blockwise selection. Need a special case, which
+"				actually is tricky because of the detection of
+"				the end-of-the-line in combination with having
+"				two cursor positions (via v_o) in a blockwise
+"				selection. Instead of following down that road,
+"				switch to a put in visual mode in combination
+"				with a save and restore of the unnamed register.
+"				This should handle all cases and doesn't require
+"				the autoindent workaround, neither. 
 "   1.10.012	18-Mar-2011	The operator-pending mapping now also handles
 "				'nomodifiable' and 'readonly' buffers without
 "				function errors. Add checking and probing inside
@@ -82,23 +90,32 @@ function! s:SetRegister()
     let s:register = v:register
 endfunction
 function! s:ReplaceWithRegister( type )
+    " With a put in visual mode, the selected text will be replaced with the
+    " contents of the register. This works better than first deleting the
+    " selection into the black-hole register and then doing the insert; as 
+    " "d" + "i/a" has issues at the end-of-the line (especially with blockwise
+    " selections, where "v_o" can put the cursor at either end), and the "c"
+    " commands has issues with multiple insertion on blockwise selection and
+    " autoindenting. 
+    " With a put in visual mode, the previously selected text is put in the
+    " unnamed register, so we need to save and restore that. 
     let l:save_clipboard = &clipboard
     set clipboard= " Avoid clobbering the selection and clipboard registers. 
     let l:save_reg = getreg('"')
     let l:save_regmode = getregtype('"')
 
+    " Note: Must not use ""p; this somehow replaces the selection with itself?! 
+    let l:pasteCmd = (s:register ==# '"' ? 'p' : '"' . s:register . 'p')
     try
 	if a:type ==# 'visual'
-	    normal! gvp
+	    execute 'normal! gv' . l:pasteCmd
 	else
-	    " Note: :normal! `[c`] would keep the last moved-over character, as 'c'
-	    " changes until the mark, but does not include it. The easiest way to get
-	    " around this is to first establish a visual selection, then change that.
-	    " However, even here we need to make sure to be "inclusive"! 
+	    " Note: Need to use an "inclusive" selection to make `] include the
+	    " last moved-over character. 
 	    let l:save_selection = &selection
 	    set selection=inclusive
 	    try
-		normal! `[v`]p
+		execute 'normal! `[v`]' . l:pasteCmd
 	    finally
 		let &selection = l:save_selection
 	    endtry
