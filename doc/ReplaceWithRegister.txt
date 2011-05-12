@@ -38,6 +38,8 @@ RELATED WORKS								     *
 - operator-replace (vimscript #2782) provides replacement of {motion} only,
   depends on another library of the author, and does not have a default
   mapping. 
+- Luc Hermitte has a elegant minimalistic visual-mode mapping in
+  http://code.google.com/p/lh-vim/source/browse/misc/trunk/macros/repl-visual-no-reg-overwrite.vim
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
@@ -77,7 +79,7 @@ If you want to use different mappings, map your keys to the
 (e.g. in your |vimrc|): >
     nmap <silent> <Leader>r  <Plug>ReplaceWithRegisterOperator
     nmap <silent> <Leader>rr <Plug>ReplaceWithRegisterLine
-    vmap <silent> <Leader>r  <Plug>ReplaceWithRegisterOperator
+    vmap <silent> <Leader>r  <Plug>ReplaceWithRegisterVisual
 <
 ==============================================================================
 LIMITATIONS				     *ReplaceWithRegister-limitations*
@@ -96,6 +98,27 @@ IDEAS						   *ReplaceWithRegister-ideas*
 
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
+
+1.20	26-Apr-2011
+- BUG: ReplaceWithRegisterOperator didn't work correctly with linewise motions
+  (like "+"); need to use a linewise visual selection in this case. 
+- BUG: Text duplicated from yanked previous lines is inserted on a replacement
+  of a visual blockwise selection. Switch replacement mechanism to a put in
+  visual mode in combination with a save and restore of the unnamed register.
+  This should handle all cases and doesn't require the autoindent workaround,
+  neither. 
+
+1.10	21-Apr-2011
+- The operator-pending mapping now also handles 'nomodifiable' and 'readonly'
+  buffers without function errors. 
+- Add experimental support for repeating the replacement also in visual mode
+  through visualrepeat.vim. Renamed vmap <Plug>ReplaceWithRegisterOperator to
+  <Plug>ReplaceWithRegisterVisual for that. 
+  *** PLEASE UPDATE YOUR CUSTOM MAPPINGS ***
+  A repeat in visual mode will now apply the previous line and operator
+  replacement to the selection text. A repeat in normal mode will apply the
+  previous visual mode replacement at the current cursor position, using the
+  size of the last visual selection. 
 
 1.03    07-Jan-2011
 - ENH: Better handling when buffer is 'nomodifiable' or 'readonly'. 
