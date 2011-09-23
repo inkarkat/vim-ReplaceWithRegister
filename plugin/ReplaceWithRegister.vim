@@ -11,6 +11,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.30.015	24-Sep-2011	ENH: Handling use of expression register "=. 
 "   1.20.014	26-Apr-2011	BUG: ReplaceWithRegisterOperator didn't work
 "				correctly with linewise motions (like "+"); need
 "				to use a linewise visual selection in this case. 
@@ -92,6 +93,22 @@ let g:loaded_ReplaceWithRegister = 1
 function! s:SetRegister()
     let s:register = v:register
 endfunction
+function! s:CorrectForCharacterwise( register, regType, pasteText )
+    if a:regType ==# 'V' && a:pasteText =~# '\n$'
+	" Our custom operator is characterwise, even in the
+	" ReplaceWithRegisterLine variant, in order to be able to replace less
+	" than entire lines (i.e. characterwise yanks). 
+	" So there's a mismatch when the replacement text is a linewise yank,
+	" and the replacement would put an additional newline to the end.
+	" To fix that, we temporarily remove the trailing newline character from
+	" the register contents and set the register type to characterwise yank. 
+	call setreg(a:register, strpart(a:pasteText, 0, len(a:pasteText) - 1), 'v')
+	
+	return 1
+    endif
+
+    return 0
+endfunction
 function! s:ReplaceWithRegister( type )
     " With a put in visual mode, the selected text will be replaced with the
     " contents of the register. This works better than first deleting the
@@ -109,6 +126,19 @@ function! s:ReplaceWithRegister( type )
 
     " Note: Must not use ""p; this somehow replaces the selection with itself?! 
     let l:pasteCmd = (s:register ==# '"' ? 'p' : '"' . s:register . 'p')
+    if s:register ==# '='
+	" Cannot evaluate the expression register within a function; unscoped
+	" variables do not refer to the global scope. Therefore, evaluation
+	" happened earlier in the mappings. 
+	" To get the expression result into the buffer, we use the unnamed
+	" register; this will be restored, anyway. 
+	call setreg('"', g:ReplaceWithRegister_expr)
+	call s:CorrectForCharacterwise('"', getregtype('"'), g:ReplaceWithRegister_expr)
+	" Must not clean up the global temp variable to allow command
+	" repetition. 
+	"unlet g:ReplaceWithRegister_expr
+	let l:pasteCmd = 'p'
+    endif
     try
 	if a:type ==# 'visual'
 	    execute 'normal! gv' . l:pasteCmd
@@ -129,23 +159,16 @@ function! s:ReplaceWithRegister( type )
     endtry
 endfunction
 function! s:ReplaceWithRegisterOperator( type, ... )
-    let l:pasteText = getreg(s:register)
+    let l:pasteText = getreg(s:register, 1) " Expression evaluation inside function context may cause errors, therefore get unevaluated expression when s:register ==# '='. 
     let l:regType = getregtype(s:register)
-    if l:regType ==# 'V' && l:pasteText =~# '\n$'
-	" Our custom operator is characterwise, even in the
-	" ReplaceWithRegisterLine variant, in order to be able to replace less
-	" than entire lines (i.e. characterwise yanks). 
-	" So there's a mismatch when the replacement text is a linewise yank,
-	" and the replacement would put an additional newline to the end.
-	" To fix that, we temporarily remove the trailing newline character from
-	" the register contents and set the register type to characterwise yank. 
-	call setreg(s:register, strpart(l:pasteText, 0, len(l:pasteText) - 1), 'v')
-    endif
+    let l:isCorrected = s:CorrectForCharacterwise(s:register, l:regType, l:pasteText)
     try
 	call s:ReplaceWithRegister(a:type)
     finally
-	if l:regType ==# 'V' && l:pasteText =~# '\n$'
+	if l:isCorrected
 	    " Undo the temporary change of the register. 
+	    " Note: This doesn't cause trouble for the read-only registers :, .,
+	    " %, # and =, because their regtype is always 'v'. 
 	    call setreg(s:register, l:pasteText, l:regType)
 	endif
     endtry
@@ -162,6 +185,7 @@ function! s:ReplaceWithRegisterOperatorExpression( opfunc )
     let &opfunc = a:opfunc
 
     let l:keys = 'g@'
+
     if ! &l:modifiable || &l:readonly
 	" Probe for "Cannot make changes" error and readonly warning via a no-op
 	" dummy modification. 
@@ -169,6 +193,12 @@ function! s:ReplaceWithRegisterOperatorExpression( opfunc )
 	" command chain, discard the g@, and thus not invoke the operatorfunc. 
 	let l:keys = "\"=''\<CR>p" . l:keys
     endif
+
+    if v:register ==# '='
+	" Must evaluate the expression register outside of a function. 
+	let l:keys = ":let g:ReplaceWithRegister_expr = getreg('=')\<CR>" . l:keys
+    endif
+
     return l:keys
 endfunction
 
@@ -178,9 +208,9 @@ nnoremap <expr> <Plug>ReplaceWithRegisterOperator <SID>ReplaceWithRegisterOperat
 " This mapping needs repeat.vim to be repeatable, because it contains of
 " multiple steps (visual selection + 'c' command inside
 " s:ReplaceWithRegisterOperator). 
-nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterLine")<CR>
+nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>if v:register ==# '='<Bar>let g:ReplaceWithRegister_expr = getreg('=')<Bar>endif<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterLine")<CR>
 " Repeat not defined in visual mode. 
-vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
+vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>if v:register ==# '='<Bar>let g:ReplaceWithRegister_expr = getreg('=')<Bar>endif<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
 vnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>ReplaceWithRegisterVisual
 nnoremap <expr> <SID>Reselect '1v' . (visualmode() !=# 'V' && &selection ==# 'exclusive' ? ' ' : '')
 nnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>Reselect<SID>ReplaceWithRegisterVisual
