@@ -12,6 +12,13 @@
 "
 " REVISION	DATE		REMARKS 
 "   1.30.015	24-Sep-2011	ENH: Handling use of expression register "=. 
+"				BUG: v:register is not replaced during command
+"				repetition, so repeat always used the unnamed
+"				register. Added parallel
+"				<Plug>ReplaceWithRegisterRepeat... mappings that
+"				omit the <SID>SetRegister() and <SID>IsExprReg()
+"				stuff and are registered for repetition instead
+"				of the original mappings. 
 "   1.20.014	26-Apr-2011	BUG: ReplaceWithRegisterOperator didn't work
 "				correctly with linewise motions (like "+"); need
 "				to use a linewise visual selection in this case. 
@@ -93,6 +100,10 @@ let g:loaded_ReplaceWithRegister = 1
 function! s:SetRegister()
     let s:register = v:register
 endfunction
+function! s:IsExprReg()
+    return (s:register ==# '=')
+endfunction
+
 function! s:CorrectForCharacterwise( register, regType, pasteText )
     if a:regType ==# 'V' && a:pasteText =~# '\n$'
 	" Our custom operator is characterwise, even in the
@@ -175,9 +186,9 @@ function! s:ReplaceWithRegisterOperator( type, ... )
 
     if a:0
 	silent! call repeat#set(a:1)
-	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
+	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterRepeatVisual")
     else
-	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
+	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterRepeatVisual")
     endif
 endfunction
 function! s:ReplaceWithRegisterOperatorExpression( opfunc )
@@ -205,15 +216,23 @@ endfunction
 " This mapping repeats naturally, because it just sets global things, and Vim is
 " able to repeat the g@ on its own. 
 nnoremap <expr> <Plug>ReplaceWithRegisterOperator <SID>ReplaceWithRegisterOperatorExpression('<SID>ReplaceWithRegisterOperator')
+
+" Because v:register is not replayed during command repetition, the
+" <SID>SetRegister() part must not be part of the repeatition, so that the saved
+" value of s:register persists. 
+
 " This mapping needs repeat.vim to be repeatable, because it contains of
 " multiple steps (visual selection + 'c' command inside
 " s:ReplaceWithRegisterOperator). 
-nnoremap <silent> <Plug>ReplaceWithRegisterLine     :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>if v:register ==# '='<Bar>let g:ReplaceWithRegister_expr = getreg('=')<Bar>endif<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterLine")<CR>
+nnoremap <silent> <Plug>ReplaceWithRegisterRepeatLine :<C-u>call setline(1, getline(1))<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterRepeatLine")<CR>
+nnoremap <silent> <Plug>ReplaceWithRegisterLine :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>if <SID>IsExprReg()<Bar>let g:ReplaceWithRegister_expr = getreg('=')<Bar>endif<Bar>execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterRepeatLine")<CR>
+
 " Repeat not defined in visual mode. 
-vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>if v:register ==# '='<Bar>let g:ReplaceWithRegister_expr = getreg('=')<Bar>endif<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
+vnoremap <silent> <SID>ReplaceWithRegisterRepeatVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterRepeatVisual")<CR>
+vnoremap <silent> <SID>ReplaceWithRegisterVisual :<C-u>call setline(1, getline(1))<Bar>call <SID>SetRegister()<Bar>if <SID>IsExprReg()<Bar>let g:ReplaceWithRegister_expr = getreg('=')<Bar>endif<Bar>call <SID>ReplaceWithRegisterOperator('visual', "\<lt>Plug>ReplaceWithRegisterRepeatVisual")<CR>
 vnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>ReplaceWithRegisterVisual
 nnoremap <expr> <SID>Reselect '1v' . (visualmode() !=# 'V' && &selection ==# 'exclusive' ? ' ' : '')
-nnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>Reselect<SID>ReplaceWithRegisterVisual
+nnoremap <silent> <script> <Plug>ReplaceWithRegisterRepeatVisual <SID>Reselect<SID>ReplaceWithRegisterRepeatVisual
 
 if ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'n')
     nmap <silent> gr <Plug>ReplaceWithRegisterOperator
