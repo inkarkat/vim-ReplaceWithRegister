@@ -11,6 +11,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.20.014	26-Apr-2011	BUG: ReplaceWithRegisterOperator didn't work
+"				correctly with linewise motions (like "+"); need
+"				to use a linewise visual selection in this case. 
 "   1.20.013	23-Apr-2011	BUG: Text duplicated from yanked previous lines
 "				is inserted on a replacement of a visual
 "				blockwise selection. Need a special case, which
@@ -115,7 +118,7 @@ function! s:ReplaceWithRegister( type )
 	    let l:save_selection = &selection
 	    set selection=inclusive
 	    try
-		execute 'normal! `[v`]' . l:pasteCmd
+		execute 'normal! `[' . (a:type ==# 'line' ? 'V' : 'v') . '`]' . l:pasteCmd
 	    finally
 		let &selection = l:save_selection
 	    endtry
@@ -129,9 +132,9 @@ function! s:ReplaceWithRegisterOperator( type, ... )
     let l:pasteText = getreg(s:register)
     let l:regType = getregtype(s:register)
     if l:regType ==# 'V' && l:pasteText =~# '\n$'
-	" Our custom operator is linewise, even in the ReplaceWithRegisterLine
-	" variant, in order to be able to replace less than entire lines (i.e.
-	" characterwise yanks). 
+	" Our custom operator is characterwise, even in the
+	" ReplaceWithRegisterLine variant, in order to be able to replace less
+	" than entire lines (i.e. characterwise yanks). 
 	" So there's a mismatch when the replacement text is a linewise yank,
 	" and the replacement would put an additional newline to the end.
 	" To fix that, we temporarily remove the trailing newline character from
