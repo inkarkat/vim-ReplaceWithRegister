@@ -21,7 +21,7 @@ function! ReplaceWithRegister#IsExprReg()
     return (s:register ==# '=')
 endfunction
 
-function! s:CorrectForCharacterwise( register, regType, pasteText )
+function! s:CorrectForRegtype( register, regType, pasteText )
     if a:regType ==# 'V' && a:pasteText =~# '\n$'
 	" Our custom operator is characterwise, even in the
 	" ReplaceWithRegisterLine variant, in order to be able to replace less
@@ -61,7 +61,7 @@ function! s:ReplaceWithRegister( type )
 	" To get the expression result into the buffer, we use the unnamed
 	" register; this will be restored, anyway. 
 	call setreg('"', g:ReplaceWithRegister_expr)
-	call s:CorrectForCharacterwise('"', getregtype('"'), g:ReplaceWithRegister_expr)
+	call s:CorrectForRegtype('"', getregtype('"'), g:ReplaceWithRegister_expr)
 	" Must not clean up the global temp variable to allow command
 	" repetition. 
 	"unlet g:ReplaceWithRegister_expr
@@ -89,7 +89,7 @@ endfunction
 function! ReplaceWithRegister#Operator( type, ... )
     let l:pasteText = getreg(s:register, 1) " Expression evaluation inside function context may cause errors, therefore get unevaluated expression when s:register ==# '='. 
     let l:regType = getregtype(s:register)
-    let l:isCorrected = s:CorrectForCharacterwise(s:register, l:regType, l:pasteText)
+    let l:isCorrected = s:CorrectForRegtype(s:register, l:regType, l:pasteText)
     try
 	call s:ReplaceWithRegister(a:type)
     finally
