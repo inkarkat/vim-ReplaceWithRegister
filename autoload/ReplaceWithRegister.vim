@@ -10,13 +10,16 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
-"	002	27-Sep-2011	Adaptations for blockwise replace: 
+"   1.30.003	30-Sep-2011	Avoid clobbering of expression register so that
+"				a command repeat is able to re-evaluate the
+"				expression. 
+"   1.30.002	27-Sep-2011	Adaptations for blockwise replace: 
 "				- If the register contains just a single line,
 "				  temporarily duplicate the line to match the
 "				  height of the blockwise selection. 
 "				- If the register contains multiple lines, paste
 "				  as blockwise. 
-"	001	24-Sep-2011	Moved functions from plugin to separate autoload
+"   1.30.001	24-Sep-2011	Moved functions from plugin to separate autoload
 "				script. 
 "				file creation
 
@@ -141,7 +144,7 @@ function! ReplaceWithRegister#OperatorExpression()
 	" dummy modification. 
 	" In the case of a nomodifiable buffer, Vim will abort the normal mode
 	" command chain, discard the g@, and thus not invoke the operatorfunc. 
-	let l:keys = "\"=''\<CR>p" . l:keys
+	let l:keys = ":call setline(1, getline(1))\<CR>" . l:keys
     endif
 
     if v:register ==# '='
