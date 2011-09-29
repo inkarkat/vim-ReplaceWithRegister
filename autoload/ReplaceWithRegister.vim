@@ -10,6 +10,12 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"	002	27-Sep-2011	Adaptations for blockwise replace: 
+"				- If the register contains just a single line,
+"				  temporarily duplicate the line to match the
+"				  height of the blockwise selection. 
+"				- If the register contains multiple lines, paste
+"				  as blockwise. 
 "	001	24-Sep-2011	Moved functions from plugin to separate autoload
 "				script. 
 "				file creation
@@ -21,8 +27,24 @@ function! ReplaceWithRegister#IsExprReg()
     return (s:register ==# '=')
 endfunction
 
-function! s:CorrectForRegtype( register, regType, pasteText )
-    if a:regType ==# 'V' && a:pasteText =~# '\n$'
+function! s:CorrectForRegtype( type, register, regType, pasteText )
+    if a:type ==# 'visual' && visualmode() ==# "\<C-v>" || a:type[0] ==# "\<C-v>"
+	" Adaptations for blockwise replace. 
+	let l:pasteLnum = len(split(a:pasteText, "\n"))
+	if a:regType ==# 'v' || a:regType ==# 'V' && l:pasteLnum == 1
+	    " If the register contains just a single line, temporarily duplicate
+	    " the line to match the height of the blockwise selection. 
+	    let l:height = line("'>") - line("'<") + 1
+	    if l:height > 1
+		call setreg(a:register, join(repeat(split(a:pasteText, "\n"), l:height), "\n"), "\<C-v>")
+		return 1
+	    endif
+	elseif a:regType ==# 'V' && l:pasteLnum > 1
+	    " If the register contains multiple lines, paste as blockwise. 
+	    call setreg(a:register, '', "a\<C-v>")
+	    return 1
+	endif
+    elseif a:regType ==# 'V' && a:pasteText =~# '\n$'
 	" Our custom operator is characterwise, even in the
 	" ReplaceWithRegisterLine variant, in order to be able to replace less
 	" than entire lines (i.e. characterwise yanks). 
@@ -61,7 +83,7 @@ function! s:ReplaceWithRegister( type )
 	" To get the expression result into the buffer, we use the unnamed
 	" register; this will be restored, anyway. 
 	call setreg('"', g:ReplaceWithRegister_expr)
-	call s:CorrectForRegtype('"', getregtype('"'), g:ReplaceWithRegister_expr)
+	call s:CorrectForRegtype(a:type, '"', getregtype('"'), g:ReplaceWithRegister_expr)
 	" Must not clean up the global temp variable to allow command
 	" repetition. 
 	"unlet g:ReplaceWithRegister_expr
@@ -89,7 +111,7 @@ endfunction
 function! ReplaceWithRegister#Operator( type, ... )
     let l:pasteText = getreg(s:register, 1) " Expression evaluation inside function context may cause errors, therefore get unevaluated expression when s:register ==# '='. 
     let l:regType = getregtype(s:register)
-    let l:isCorrected = s:CorrectForRegtype(s:register, l:regType, l:pasteText)
+    let l:isCorrected = s:CorrectForRegtype(a:type, s:register, l:regType, l:pasteText)
     try
 	call s:ReplaceWithRegister(a:type)
     finally
