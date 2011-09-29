@@ -10,6 +10,7 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.30.016	30-Sep-2011	Re-evaluate expression on repeat. 
 "   1.30.015	24-Sep-2011	ENH: Handling use of expression register "=. 
 "				BUG: v:register is not replaced during command
 "				repetition, so repeat always used the unnamed
@@ -115,6 +116,9 @@ nnoremap <expr> <Plug>ReplaceWithRegisterOperator ReplaceWithRegister#OperatorEx
 " ReplaceWithRegister#Operator). 
 nnoremap <silent> <Plug>ReplaceWithRegisterRepeatLine
 \ :<C-u>call setline(1, getline(1))<Bar>
+\if ReplaceWithRegister#IsExprReg()<Bar>
+\    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
+\endif<Bar>
 \execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterRepeatLine")<CR>
 
@@ -130,6 +134,9 @@ nnoremap <silent> <Plug>ReplaceWithRegisterLine
 " Repeat not defined in visual mode. 
 vnoremap <silent> <SID>ReplaceWithRegisterRepeatVisual
 \ :<C-u>call setline(1, getline(1))<Bar>
+\if ReplaceWithRegister#IsExprReg()<Bar>
+\    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
+\endif<Bar>
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterRepeatVisual")<CR>
 
 vnoremap <silent> <SID>ReplaceWithRegisterVisual
