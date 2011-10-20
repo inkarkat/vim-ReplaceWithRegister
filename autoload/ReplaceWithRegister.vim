@@ -13,6 +13,9 @@
 "   1.30.003	30-Sep-2011	Avoid clobbering of expression register so that
 "				a command repeat is able to re-evaluate the
 "				expression. 
+"				Undo parallel <Plug>ReplaceWithRegisterRepeat...
+"				mappings, as this is now handled by the enhanced
+"				repeat.vim plugin. 
 "   1.30.002	27-Sep-2011	Adaptations for blockwise replace: 
 "				- If the register contains just a single line,
 "				  temporarily duplicate the line to match the
@@ -128,9 +131,9 @@ function! ReplaceWithRegister#Operator( type, ... )
 
     if a:0
 	silent! call repeat#set(a:1)
-	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterRepeatVisual")
+	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
     else
-	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterRepeatVisual")
+	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
     endif
 endfunction
 function! ReplaceWithRegister#OperatorExpression()
