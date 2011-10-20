@@ -10,6 +10,14 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.30.018	21-Oct-2011	BUG: <SID>Reselect swallows register repeat set
+"				by repeat.vim. Don't re-use
+"				<SID>ReplaceWithRegisterVisual and get rid of
+"				it, and instead insert <SID>Reselect in the
+"				middle of the expanded
+"				<Plug>ReplaceWithRegisterVisual, after the
+"				register handling, before the eventual function
+"				invocation. 
 "   1.30.017	30-Sep-2011	Add register registration to enhanced repeat.vim
 "				plugin, which also handles repetition when used
 "				together with the expression register "=. 
@@ -127,7 +135,7 @@ nnoremap <silent> <Plug>ReplaceWithRegisterLine
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterLine")<CR>
 
 " Repeat not defined in visual mode. 
-vnoremap <silent> <SID>ReplaceWithRegisterVisual
+vnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \ :<C-u>call setline(1, getline(1))<Bar>
 \silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
@@ -136,9 +144,19 @@ vnoremap <silent> <SID>ReplaceWithRegisterVisual
 \endif<Bar>
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
 
-vnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>ReplaceWithRegisterVisual
-nnoremap <expr> <SID>Reselect '1v' . (visualmode() !=# 'V' && &selection ==# 'exclusive' ? ' ' : '')
-nnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual <SID>Reselect<SID>ReplaceWithRegisterVisual
+" A normal-mode repeat of the visual mapping is triggered by repeat.vim. It
+" establishes a new selection at the cursor position, of the same mode and size
+" as the last selection. The register must be handled first, though. 
+nnoremap <expr> <SID>(Reselect) '1v' . (visualmode() !=# 'V' && &selection ==# 'exclusive' ? ' ' : '')
+nnoremap <silent> <script> <Plug>ReplaceWithRegisterVisual
+\ :<C-u>call setline(1, getline(1))<Bar>
+\silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)<Bar>
+\call ReplaceWithRegister#SetRegister()<Bar>
+\if ReplaceWithRegister#IsExprReg()<Bar>
+\    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
+\endif<CR>
+\<SID>(Reselect)
+\:<C-u>call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
 
 
 if ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'n')
