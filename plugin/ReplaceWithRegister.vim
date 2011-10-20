@@ -10,6 +10,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.30.019	21-Oct-2011	Employ repeat.vim to have the expression
+"				re-evaluated on repetition of the
+"				operator-pending mapping. 
 "   1.30.018	21-Oct-2011	BUG: <SID>Reselect swallows register repeat set
 "				by repeat.vim. Don't re-use
 "				<SID>ReplaceWithRegisterVisual and get rid of
@@ -120,6 +123,11 @@ set cpo&vim
 " This mapping repeats naturally, because it just sets global things, and Vim is
 " able to repeat the g@ on its own. 
 nnoremap <expr> <Plug>ReplaceWithRegisterOperator ReplaceWithRegister#OperatorExpression()
+" But we need repeat.vim to get the expression register re-evaluated: When Vim's
+" . command re-invokes 'opfunc', the expression isn't re-evaluated, an
+" inconsistency with the other mappings. We creatively use repeat.vim to sneak
+" in the expression evaluation then. 
+nnoremap <silent> <Plug>ReplaceWithRegisterExpressionSpecial :<C-u>let g:ReplaceWithRegister_expr = getreg('=')<Bar>execute 'normal!' v:count1 . '.'<CR>
 
 " This mapping needs repeat.vim to be repeatable, because it contains of
 " multiple steps (visual selection + 'c' command inside
