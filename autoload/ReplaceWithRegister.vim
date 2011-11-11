@@ -10,6 +10,9 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.30.004	21-Oct-2011	Employ repeat.vim to have the expression
+"				re-evaluated on repetition of the
+"				operator-pending mapping. 
 "   1.30.003	30-Sep-2011	Avoid clobbering of expression register so that
 "				a command repeat is able to re-evaluate the
 "				expression. 
@@ -131,6 +134,11 @@ function! ReplaceWithRegister#Operator( type, ... )
 
     if a:0
 	silent! call repeat#set(a:1)
+	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
+    elseif s:register ==# '='
+	" Employ repeat.vim to have the expression re-evaluated on repetition of
+	" the operator-pending mapping. 
+	silent! call repeat#set("\<Plug>ReplaceWithRegisterExpressionSpecial")
 	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
     else
 	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
