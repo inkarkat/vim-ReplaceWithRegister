@@ -89,6 +89,15 @@ LIMITATIONS				     *ReplaceWithRegister-limitations*
 - The commands don't work on the expression register "=. Nothing is pasted. 
 - The mode cannot be set for register "/; it will always be pasted
   characterwise. Implement a special case for glp? 
+- With :set selection=clipboard together with either "autoselect" (in the
+  console) or a 'guioptions' setting that contains "a" (in the GUI), the
+  mappings don't seem to work. This is because they all temporarily create a
+  visual selection, whose contents are put into register *, which is the
+  default register due to the 'selection' setting. Therefore, the replacement
+  replaces itself. The same happens when you try to replace the visual
+  selection via the built-in |v_p| command. Either don't use these settings in
+  combination, or explicitly select the default register by prepending "" to
+  the mappings. 
 
 KNOWN PROBLEMS				  *ReplaceWithRegister-known-problems*
 
