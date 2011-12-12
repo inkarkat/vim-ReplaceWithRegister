@@ -108,6 +108,19 @@ IDEAS						   *ReplaceWithRegister-ideas*
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
 
+1.30	06-Dec-2011
+- Adaptations for blockwise replace: 
+  - If the register contains just a single line, temporarily duplicate the
+    line to match the height of the blockwise selection. 
+  - If the register contains multiple lines, paste as blockwise. 
+- BUG: v:register is not replaced during command repetition, so repeat always
+  used the unnamed register. Add register registration to enhanced repeat.vim
+  plugin, which also handles repetition when used together with the expression
+  register "=. Requires a so far inofficial update to repeat.vim version 1.0
+  (that hopefully makes it into upstream), which is available at
+  https://github.com/inkarkat/vim-repeat/zipball/1.0ENH1
+- Moved functions from plugin to separate autoload script. 
+
 1.20	26-Apr-2011
 - BUG: ReplaceWithRegisterOperator didn't work correctly with linewise motions
   (like "+"); need to use a linewise visual selection in this case. 
