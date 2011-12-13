@@ -10,6 +10,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS 
+"   1.30.005	06-Dec-2011	Retire visualrepeat#set_also(); use
+"				visualrepeat#set() everywhere. 
 "   1.30.004	21-Oct-2011	Employ repeat.vim to have the expression
 "				re-evaluated on repetition of the
 "				operator-pending mapping. 
@@ -134,15 +136,12 @@ function! ReplaceWithRegister#Operator( type, ... )
 
     if a:0
 	silent! call repeat#set(a:1)
-	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
     elseif s:register ==# '='
 	" Employ repeat.vim to have the expression re-evaluated on repetition of
 	" the operator-pending mapping. 
 	silent! call repeat#set("\<Plug>ReplaceWithRegisterExpressionSpecial")
-	silent! call visualrepeat#set_also("\<Plug>ReplaceWithRegisterVisual")
-    else
-	silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
     endif
+    silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
 endfunction
 function! ReplaceWithRegister#OperatorExpression()
     call ReplaceWithRegister#SetRegister()
@@ -166,4 +165,4 @@ function! ReplaceWithRegister#OperatorExpression()
     return l:keys
 endfunction
 
-" vim: set sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
+" vim: set ts=8 sts=4 sw=4 noexpandtab ff=unix fdm=syntax :
