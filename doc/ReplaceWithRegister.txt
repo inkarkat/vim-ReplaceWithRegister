@@ -57,18 +57,21 @@ USAGE						   *ReplaceWithRegister-usage*
 INSTALLATION				    *ReplaceWithRegister-installation*
 
 This script is packaged as a |vimball|. If you have the "gunzip" decompressor
-in your PATH, simply edit the *.vba.gz package in Vim; otherwise, decompress
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
 the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
 vimball or via the |:UseVimball| command. >
-    vim ReplaceWithRegister.vba.gz
+    vim ReplaceWithRegister*.vmb.gz
     :so %
 To uninstall, use the |:RmVimball| command.
 
 DEPENDENCIES				    *ReplaceWithRegister-dependencies*
 
 - Requires Vim 7.0 or higher.
-- repeat.vim (vimscript #2136) plugin (optional).
-- visualrepeat.vim (vimscript #3848) plugin (optional).
+- repeat.vim (vimscript #2136) plugin (optional)
+  To support repetition with a register other than the default register, you
+  need a plugin version later than the 1.0 version published on vim.org. You
+  can download it from the repository at https://github.com/tpope/vim-repeat
+- visualrepeat.vim (vimscript #3848) plugin (optional)
 
 ==============================================================================
 CONFIGURATION				   *ReplaceWithRegister-configuration*
@@ -108,6 +111,12 @@ IDEAS						   *ReplaceWithRegister-ideas*
 
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
+
+1.31	28-Nov-2012
+BUG: When repeat.vim is not installed, the grr and v_gr mappings do nothing.
+Need to :execute the :silent! call of repeat.vim to avoid that the remainder
+of the command line is aborted together with the call. Thanks for David
+Kotchan for reporting this.
 
 1.30	06-Dec-2011
 - Adaptations for blockwise replace:
