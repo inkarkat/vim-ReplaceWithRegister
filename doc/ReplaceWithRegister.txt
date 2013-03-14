@@ -69,8 +69,7 @@ DEPENDENCIES				    *ReplaceWithRegister-dependencies*
 - Requires Vim 7.0 or higher.
 - repeat.vim (vimscript #2136) plugin (optional)
   To support repetition with a register other than the default register, you
-  need a plugin version later than the 1.0 version published on vim.org. You
-  can download it from the repository at https://github.com/tpope/vim-repeat
+  need version 1.1 or later.
 - visualrepeat.vim (vimscript #3848) plugin (optional)
 
 ==============================================================================
