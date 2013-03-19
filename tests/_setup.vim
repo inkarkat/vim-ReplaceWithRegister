@@ -11,6 +11,12 @@ call setreg('m', "multiple\nlines of\ntext\n", 'l')
 
 normal! gg0yy
 
+let s:foo = 0
+function! Foo()
+    let s:foo += 1
+    return s:foo
+endfunction
+
 function! VerifyRegisters()
     call vimtest#StartTap()
     call vimtap#Plan(2)
