@@ -4,12 +4,14 @@
 "   - repeat.vim (vimscript #2136) autoload script (optional)
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "
-" Copyright: (C) 2011 Ingo Karkat
+" Copyright: (C) 2011-2012 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.32.006	28-Dec-2012	Minor: Correct lnum for no-modifiable buffer
+"				check.
 "   1.30.005	06-Dec-2011	Retire visualrepeat#set_also(); use
 "				visualrepeat#set() everywhere.
 "   1.30.004	21-Oct-2011	Employ repeat.vim to have the expression
@@ -154,7 +156,7 @@ function! ReplaceWithRegister#OperatorExpression()
 	" dummy modification.
 	" In the case of a nomodifiable buffer, Vim will abort the normal mode
 	" command chain, discard the g@, and thus not invoke the operatorfunc.
-	let l:keys = ":call setline(1, getline(1))\<CR>" . l:keys
+	let l:keys = ":call setline('.', getline('.'))\<CR>" . l:keys
     endif
 
     if v:register ==# '='
