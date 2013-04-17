@@ -4,12 +4,13 @@
 "   - repeat.vim (vimscript #2136) autoload script (optional)
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "
-" Copyright: (C) 2011-2012 Ingo Karkat
+" Copyright: (C) 2011-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.32.007	21-Mar-2013	Avoid changing the jumplist.
 "   1.32.006	28-Dec-2012	Minor: Correct lnum for no-modifiable buffer
 "				check.
 "   1.30.005	06-Dec-2011	Retire visualrepeat#set_also(); use
@@ -111,7 +112,7 @@ function! s:ReplaceWithRegister( type )
 	    let l:save_selection = &selection
 	    set selection=inclusive
 	    try
-		execute 'normal! `[' . (a:type ==# 'line' ? 'V' : 'v') . '`]' . l:pasteCmd
+		execute 'normal! g`[' . (a:type ==# 'line' ? 'V' : 'v') . 'g`]' . l:pasteCmd
 	    finally
 		let &selection = l:save_selection
 	    endtry
