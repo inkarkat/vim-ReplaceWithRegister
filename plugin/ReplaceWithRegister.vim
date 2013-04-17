@@ -2,7 +2,7 @@
 "
 " DEPENDENCIES:
 "   - Requires Vim 7.0 or higher.
-"   - ReplaceWithRegister.vim autoload script.
+"   - ReplaceWithRegister.vim autoload script
 "
 " Copyright: (C) 2008-2012 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -10,6 +10,11 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.31.021	28-Nov-2012	BUG: When repeat.vim is not installed, the grr
+"				and v_gr mappings do nothing. Need to :execute
+"				the :silent! call of repeat.vim to avoid that
+"				the remainder of the command line is aborted
+"				together with the call.
 "   1.31.020	11-Sep-2012	Minor: Use current line for no-op modification
 "				check.
 "   1.30.019	21-Oct-2011	Employ repeat.vim to have the expression
@@ -141,7 +146,7 @@ nnoremap <silent> <Plug>ReplaceWithRegisterExpressionSpecial :<C-u>let g:Replace
 " ReplaceWithRegister#Operator).
 nnoremap <silent> <Plug>ReplaceWithRegisterLine
 \ :<C-u>call setline('.', getline('.'))<Bar>
-\silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterLine", v:register)<Bar>
+\execute 'silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterLine", v:register)'<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
 \if ReplaceWithRegister#IsExprReg()<Bar>
 \    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
@@ -152,7 +157,7 @@ nnoremap <silent> <Plug>ReplaceWithRegisterLine
 " Repeat not defined in visual mode, but enabled through visualrepeat.vim.
 vnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \ :<C-u>call setline('.', getline('.'))<Bar>
-\silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)<Bar>
+\execute 'silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)'<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
 \if ReplaceWithRegister#IsExprReg()<Bar>
 \    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
@@ -169,7 +174,7 @@ vnoremap <silent> <Plug>ReplaceWithRegisterVisual
 " First of all, the register must be handled, though.
 nnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \ :<C-u>call setline('.', getline('.'))<Bar>
-\silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)<Bar>
+\execute 'silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)'<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
 \if ReplaceWithRegister#IsExprReg()<Bar>
 \    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
