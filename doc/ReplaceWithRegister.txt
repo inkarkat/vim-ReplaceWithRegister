@@ -31,6 +31,12 @@ replacement command / selection, not by the register contents. This avoids
 surprises like when the replacement text was a linewise yank, but the
 replacement is characterwise: In this case, no additional newline is inserted.
 
+SEE ALSO								     *
+
+- ReplaceWithSameIndentRegister.vim (vimscript #0000) is a companion plugin
+  for the special (but frequent) case of replacing lines while keeping the
+  original indent.
+
 RELATED WORKS								     *
 
 - regreplop.vim (vimscript #2702) provides an alternative implementation of
@@ -74,7 +80,7 @@ DEPENDENCIES				    *ReplaceWithRegister-dependencies*
 
 ==============================================================================
 CONFIGURATION				   *ReplaceWithRegister-configuration*
-
+						   *ReplaceWithRegister-remap*
 The default mappings override the (rarely used, but somewhat related) |gr|
 command (replace virtual characters under the cursor with {char}).
 If you want to use different mappings, map your keys to the
@@ -82,14 +88,11 @@ If you want to use different mappings, map your keys to the
 (e.g. in your |vimrc|): >
     nmap <Leader>r  <Plug>ReplaceWithRegisterOperator
     nmap <Leader>rr <Plug>ReplaceWithRegisterLine
-    vmap <Leader>r  <Plug>ReplaceWithRegisterVisual
+    xmap <Leader>r  <Plug>ReplaceWithRegisterVisual
 <
 ==============================================================================
 LIMITATIONS				     *ReplaceWithRegister-limitations*
 
-- The commands don't work on the readonly registers ":, "., "% and "#. "E384:
-  Invalid register name" is printed.
-- The commands don't work on the expression register "=. Nothing is pasted.
 - The mode cannot be set for register "/; it will always be pasted
   characterwise. Implement a special case for glp?
 - With :set selection=clipboard together with either "autoselect" (in the
@@ -110,6 +113,9 @@ IDEAS						   *ReplaceWithRegister-ideas*
 
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
+
+1.32	RELEASEME
+Avoid changing the jumplist.
 
 1.31	28-Nov-2012
 BUG: When repeat.vim is not installed, the grr and v_gr mappings do nothing.
@@ -170,8 +176,8 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2008-2011 Ingo Karkat
-The VIM LICENSE applies to this script; see |copyright|.
+Copyright: (C) 2008-2012 Ingo Karkat
+The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
 ==============================================================================
