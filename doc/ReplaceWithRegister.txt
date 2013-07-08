@@ -76,7 +76,7 @@ DEPENDENCIES				    *ReplaceWithRegister-dependencies*
 - repeat.vim (vimscript #2136) plugin (optional)
   To support repetition with a register other than the default register, you
   need version 1.1 or later.
-- visualrepeat.vim (vimscript #3848) plugin (optional)
+- visualrepeat.vim (vimscript #3848) plugin (version 2.00 or higher; optional)
 
 ==============================================================================
 CONFIGURATION				   *ReplaceWithRegister-configuration*
@@ -114,8 +114,12 @@ IDEAS						   *ReplaceWithRegister-ideas*
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
 
-1.32	RELEASEME
-Avoid changing the jumplist.
+1.40	RELEASEME
+- Avoid changing the jumplist.
+- Use optional visualrepeat#reapply#VisualMode() for normal mode repeat of a
+  visual mapping. When supplying a [count] on such repeat of a previous
+  linewise selection, now [count] number of lines instead of [count] times the
+  original selection is used.
 
 1.31	28-Nov-2012
 BUG: When repeat.vim is not installed, the grr and v_gr mappings do nothing.
@@ -176,7 +180,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2008-2012 Ingo Karkat
+Copyright: (C) 2008-2013 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
