@@ -46,6 +46,10 @@ RELATED WORKS								     *
   mapping.
 - Luc Hermitte has an elegant minimalistic visual-mode mapping in
   http://code.google.com/p/lh-vim/source/browse/misc/trunk/macros/repl-visual-no-reg-overwrite.vim
+- EasyClip (https://github.com/svermeulen/vim-easyclip) changes the delete
+  commands to stop yanking, introduces a new "m" command for cutting, and also
+  provides an "s" substitution operator that pastes register contents over the
+  moved-over text.
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
