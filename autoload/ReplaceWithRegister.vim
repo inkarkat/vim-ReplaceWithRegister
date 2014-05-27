@@ -5,7 +5,7 @@
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "   - visualrepeat/reapply.vim autoload script (optional)
 "
-" Copyright: (C) 2011-2013 Ingo Karkat
+" Copyright: (C) 2011-2014 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -108,8 +108,10 @@ function! s:ReplaceWithRegister( type )
     endif
     try
 	if a:type ==# 'visual'
+echomsg '**** visual' string(getpos("'<")) string(getpos("'>")) string(l:pasteCmd)
 	    execute 'normal! gv' . l:pasteCmd
 	else
+echomsg '**** operator' string(getpos("'[")) string(getpos("']")) string(l:pasteCmd)
 	    " Note: Need to use an "inclusive" selection to make `] include the
 	    " last moved-over character.
 	    let l:save_selection = &selection
