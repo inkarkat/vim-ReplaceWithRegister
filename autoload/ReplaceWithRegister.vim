@@ -3,6 +3,7 @@
 " DEPENDENCIES:
 "   - repeat.vim (vimscript #2136) autoload script (optional)
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
+"   - visualrepeat/reapply.vim autoload script (optional)
 "
 " Copyright: (C) 2011-2013 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
@@ -10,6 +11,8 @@
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.40.008	18-Apr-2013	Add ReplaceWithRegister#VisualMode() wrapper
+"				around visualrepeat#reapply#VisualMode().
 "   1.32.007	21-Mar-2013	Avoid changing the jumplist.
 "   1.32.006	28-Dec-2012	Minor: Correct lnum for no-modifiable buffer
 "				check.
@@ -165,6 +168,12 @@ function! ReplaceWithRegister#OperatorExpression()
 	let l:keys = ":let g:ReplaceWithRegister_expr = getreg('=')\<CR>" . l:keys
     endif
 
+    return l:keys
+endfunction
+
+function! ReplaceWithRegister#VisualMode()
+    let l:keys = "1v\<Esc>"
+    silent! let l:keys = visualrepeat#reapply#VisualMode(0)
     return l:keys
 endfunction
 
