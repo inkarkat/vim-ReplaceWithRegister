@@ -118,7 +118,7 @@ IDEAS						   *ReplaceWithRegister-ideas*
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
 
-1.40	RELEASEME
+1.40	21-Nov-2013
 - Avoid changing the jumplist.
 - Use optional visualrepeat#reapply#VisualMode() for normal mode repeat of a
   visual mapping. When supplying a [count] on such repeat of a previous
