@@ -36,6 +36,8 @@ SEE ALSO								     *
 - ReplaceWithSameIndentRegister.vim (vimscript #0000) is a companion plugin
   for the special (but frequent) case of replacing lines while keeping the
   original indent.
+- LineJugglerCommands.vim (vimscript #4465) provides a similar
+  :ReplaceWithRegister [x] Ex command.
 
 RELATED WORKS								     *
 
