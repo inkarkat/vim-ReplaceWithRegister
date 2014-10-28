@@ -120,6 +120,10 @@ IDEAS						   *ReplaceWithRegister-ideas*
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
 
+1.42	RELEASEME
+- BUG: Previous version 1.41 broke replacement of single character with
+  gr{motion}.
+
 1.41	28-May-2014
 - Also handle empty exclusive selection and empty text object
   (e.g. gri" on "").
