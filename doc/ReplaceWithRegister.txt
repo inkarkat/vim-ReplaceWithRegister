@@ -33,7 +33,7 @@ replacement is characterwise: In this case, no additional newline is inserted.
 
 SEE ALSO								     *
 
-- ReplaceWithSameIndentRegister.vim (vimscript #0000) is a companion plugin
+- ReplaceWithSameIndentRegister.vim (vimscript #5046) is a companion plugin
   for the special (but frequent) case of replacing lines while keeping the
   original indent.
 - LineJugglerCommands.vim (vimscript #4465) provides a similar :Replace [["]x]
@@ -120,7 +120,7 @@ IDEAS						   *ReplaceWithRegister-ideas*
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
 
-1.42	RELEASEME
+1.42	29-Oct-2014
 - BUG: Previous version 1.41 broke replacement of single character with
   gr{motion}.
 
