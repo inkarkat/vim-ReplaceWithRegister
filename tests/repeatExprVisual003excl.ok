@@ -1,0 +1,13 @@
+[default text]
+Tuple is (foo, bar, baz, hehe, hihi, hoho) for now. 
+<foo> <bar> notyetimplemented </bar> </foo>
+2
+This 'one line' is "a (multi
+1
+span)ning
+comment" (hehe). 
+4
+	    softtabstop-indented
+
+3
+EOF
