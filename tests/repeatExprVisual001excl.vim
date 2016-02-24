@@ -3,6 +3,8 @@
 " Tests that the expression is re-evaluated on repetition. 
 " Tests that the visual mode mapping repeats in normal mode. 
 
+call vimtest#SkipAndQuitIf(! vimtest#features#SupportsNormalWithCount(), 'Need support for :normal with count')
+
 runtime plugin/visualrepeat.vim
 
 set selection=exclusive
