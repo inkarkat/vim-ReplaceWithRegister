@@ -1,0 +1,17 @@
+[default text]
+Tuple is (foo, bar, baz, hehe, hihi, hoho) for now. 
+<foo> <bar> 1 </bar> </foo>
+2 line' is "a (multi line span)ning comment" (hehe). 
+3 "a (multi
+line
+span)ning
+comment" (hehe). 
+
+    space-indented
+	tab-indented
+	    softtabstop-indented
+
+4 volutpat. Donec non tortor. Vivamus posuere nisi mollis dolor. Quisque
+porttitor nisi ac elit. Nullam tincidunt ligula vitae nulla.
+
+EOF
