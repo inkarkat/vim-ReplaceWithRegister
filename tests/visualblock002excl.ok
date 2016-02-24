@@ -1,0 +1,17 @@
+[default text]
+Tuple is (foo, bar, baz, hehe, hihi, hoho) block
+<foo> <bar> notyetimplemented </bar> </foo>text!
+This 'one line' is "a (multi line span)ning comment" (hehe). 
+This 'one line' is "a (multi
+liblock
+sptext!
+comment" (hehe). 
+
+    space-indented
+	tab-indented
+	    softtabstop-indented
+
+Erat volutpat. Donec non tortor. Vivamus posuere nisi mollis dolor. Quisque
+porttitor nisi ac elit. Nullam tincidunt ligula vitae nulla.
+
+EOF
