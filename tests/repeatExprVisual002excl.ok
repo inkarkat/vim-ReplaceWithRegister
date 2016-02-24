@@ -1,0 +1,17 @@
+[default text]
+Tuple is (foo, bar, baz, hehe, hihi, hoho) for now. 
+<foo> <bar> notyetimplemented </bar> </foo>
+This 'one line' is "a (multi line span)ning comment" (hehe). 
+This 'one line' is "a (multi
+line
+span)ning
+comment" (hehe). 
+
+3-indented
+	tab-indented
+	    softtabstop-indented
+
+Erat volutpat. 2 tortor. Vivamus posuere nisi mollis dolor. Quisque
+porttitor nisi ac elit. 1lam tincidunt ligula vitae nulla.
+
+EOF
