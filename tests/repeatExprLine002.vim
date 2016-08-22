@@ -1,5 +1,5 @@
-" Test count-repeat replacing a word with an expression line. 
-" Tests that the count is correctly repeated. 
+" Test count-repeat replacing a word with an expression line.
+" Tests that the count is correctly repeated.
 
 call vimtest#SkipAndQuitIf(! vimtest#features#SupportsNormalWithCount(), 'Need support for :normal with count')
 
