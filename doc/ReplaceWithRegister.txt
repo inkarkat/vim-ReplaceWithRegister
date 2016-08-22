@@ -52,6 +52,8 @@ RELATED WORKS								     *
   commands to stop yanking, introduces a new "m" command for cutting, and also
   provides an "s" substitution operator that pastes register contents over the
   moved-over text.
+- R (replace) operator (vimscript #5239) provides an alternative
+  implementation that defaults to the clipboard register.
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
@@ -194,7 +196,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2008-2014 Ingo Karkat
+Copyright: (C) 2008-2015 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
