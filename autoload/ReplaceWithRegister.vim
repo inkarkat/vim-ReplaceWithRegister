@@ -5,12 +5,17 @@
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "   - visualrepeat/reapply.vim autoload script (optional)
 "
-" Copyright: (C) 2011-2014 Ingo Karkat
+" Copyright: (C) 2011-2016 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.43.011	23-Aug-2016	BUG: {count}grr does not repeat the count.
+"				Add ReplaceWithRegister#SetCount() and new
+"				a:isRepeatCount argument to
+"				ReplaceWithRegister#Operator() that then passes
+"				the stored s:count to repeat#set()..
 "   1.42.010	27-Jun-2014	BUG: Off-by-one error in previously introduced
 "				s:IsOnOrAfter(); actually need to use s:IsAfter().
 "   1.41.009	28-May-2014	Also handle empty exclusive selection and empty
@@ -43,6 +48,9 @@
 
 function! ReplaceWithRegister#SetRegister()
     let s:register = v:register
+endfunction
+function! ReplaceWithRegister#SetCount()
+    let s:count = v:count
 endfunction
 function! ReplaceWithRegister#IsExprReg()
     return (s:register ==# '=')
@@ -163,7 +171,11 @@ function! ReplaceWithRegister#Operator( type, ... )
     endtry
 
     if a:0
-	silent! call repeat#set(a:1)
+	if a:0 >= 2 && a:2
+	    silent! call repeat#set(a:1, s:count)
+	else
+	    silent! call repeat#set(a:1)
+	endif
     elseif s:register ==# '='
 	" Employ repeat.vim to have the expression re-evaluated on repetition of
 	" the operator-pending mapping.
