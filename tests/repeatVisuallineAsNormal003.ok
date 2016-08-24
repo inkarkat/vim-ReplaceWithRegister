@@ -1,0 +1,12 @@
+[default text]
+Tuple is (foo, bar, baz, hehe, hihi, hoho) for now. 
+	    indented text
+This 'one line' is "a (multi
+line
+span)ning
+comment" (hehe). 
+
+	    indented text
+
+	    indented text
+EOF
