@@ -4,12 +4,17 @@
 "   - Requires Vim 7.0 or higher.
 "   - ReplaceWithRegister.vim autoload script
 "
-" Copyright: (C) 2008-2013 Ingo Karkat
+" Copyright: (C) 2008-2016 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
 " REVISION	DATE		REMARKS
+"   1.43.024	23-Aug-2016	BUG: {count}grr does not repeat the count, as
+"				the :normal command to establish the selection
+"				clears it. Invoke ReplaceWithRegister#SetCount()
+"				first, and pass new a:isRepeatCount argument to
+"				ReplaceWithRegister#Operator().
 "   1.40.023	18-Apr-2013	Use optional visualrepeat#reapply#VisualMode()
 "				for normal mode repeat of a visual mapping.
 "				When supplying a [count] on such repeat of a
@@ -157,8 +162,9 @@ nnoremap <silent> <Plug>ReplaceWithRegisterLine
 \if ReplaceWithRegister#IsExprReg()<Bar>
 \    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
 \endif<Bar>
+\call ReplaceWithRegister#SetCount()<Bar>
 \execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>
-\call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterLine")<CR>
+\call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterLine", 1)<CR>
 
 " Repeat not defined in visual mode, but enabled through visualrepeat.vim.
 vnoremap <silent> <Plug>ReplaceWithRegisterVisual
