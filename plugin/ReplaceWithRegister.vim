@@ -179,10 +179,9 @@ vnoremap <silent> <Plug>ReplaceWithRegisterVisual
 " A normal-mode repeat of the visual mapping is triggered by repeat.vim. It
 " establishes a new selection at the cursor position, of the same mode and size
 " as the last selection.
-"   If [count] is given, that number of lines is used / the original size is
-"   multiplied accordingly. This has the side effect that a repeat with [count]
-"   will persist the expanded size, which is different from what the normal-mode
-"   repeat does (it keeps the scope of the original command).
+" If [count] is given, that number of lines is used / the original size is
+" multiplied accordingly. This has the side effect that a repeat with [count]
+" will persist the expanded size, just as it should.
 " First of all, the register must be handled, though.
 nnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \ :<C-u>call setline('.', getline('.'))<Bar>
