@@ -122,6 +122,9 @@ IDEAS						   *ReplaceWithRegister-ideas*
 ==============================================================================
 HISTORY						 *ReplaceWithRegister-history*
 
+1.43	RELEASEME
+- BUG: {count}grr does not repeat the count.
+
 1.42	29-Oct-2014
 - BUG: Previous version 1.41 broke replacement of single character with
   gr{motion}.
@@ -196,7 +199,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2008-2015 Ingo Karkat
+Copyright: (C) 2008-2016 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
