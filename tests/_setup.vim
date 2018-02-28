@@ -8,6 +8,7 @@ call setreg('b', "block\ntext!", 'b')
 call setreg('i', "\t    indented text\n", 'l')
 call setreg('l', "one line of text\n", 'l')
 call setreg('m', "multiple\nlines of\ntext\n", 'l')
+call setreg('n', "  multiple\n\tlines of\n    text\n", 'l')
 
 normal! gg0yy
 
