@@ -54,6 +54,8 @@ RELATED WORKS								     *
   moved-over text.
 - R (replace) operator (vimscript #5239) provides an alternative
   implementation that defaults to the clipboard register.
+- replace_operator.vim (vimscript #5742) provides normal (only with motion,
+  not by lines) and visual mode mappings.
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
@@ -199,7 +201,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2008-2016 Ingo Karkat
+Copyright: (C) 2008-2018 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
