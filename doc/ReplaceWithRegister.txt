@@ -56,6 +56,11 @@ RELATED WORKS								     *
   implementation that defaults to the clipboard register.
 - replace_operator.vim (vimscript #5742) provides normal (only with motion,
   not by lines) and visual mode mappings.
+- subversive.vim (vimscript #5763) provides another alternative
+  implementation, has no default mappings, and as a unique feature provides a
+  two-motion operator that changes all occurrences in the moved-over range
+  with typed text; something similar to the functionality of my ChangeGlobally
+  plugin (vimscript #4321).
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
@@ -201,7 +206,7 @@ First published version.
 Started development.
 
 ==============================================================================
-Copyright: (C) 2008-2018 Ingo Karkat
+Copyright: (C) 2008-2019 Ingo Karkat
 The VIM LICENSE applies to this plugin; see |copyright|.
 
 Maintainer:	Ingo Karkat <ingo@karkat.de>
