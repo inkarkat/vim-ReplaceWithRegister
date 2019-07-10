@@ -91,29 +91,37 @@ function! s:ReplaceWithRegister( type )
     try
 	if a:type ==# 'visual'
 "****D echomsg '**** visual' string(getpos("'<")) string(getpos("'>")) string(l:pasteRegister)
+	    let l:previousLineNum = line("'>") - line("'<") + 1
 	    if &selection ==# 'exclusive' && getpos("'<") == getpos("'>")
 		" In case of an empty selection, just paste before the cursor
 		" position; reestablishing the empty selection would override
 		" the current character, a peculiarity of how selections work.
-		execute 'normal!' l:pasteRegister . 'P'
+		execute 'silent normal!' l:pasteRegister . 'P'
 	    else
-		execute 'normal! gv' . l:pasteRegister . 'p'
+		execute 'silent normal! gv' . l:pasteRegister . 'p'
 	    endif
 	else
 "****D echomsg '**** operator' string(getpos("'[")) string(getpos("']")) string(l:pasteRegister)
+	    let l:previousLineNum = line("']") - line("'[") + 1
 	    if s:IsAfter(getpos("'["), getpos("']"))
-		execute 'normal!' l:pasteRegister . 'P'
+		execute 'silent normal!' l:pasteRegister . 'P'
 	    else
 		" Note: Need to use an "inclusive" selection to make `] include
 		" the last moved-over character.
 		let l:save_selection = &selection
 		set selection=inclusive
 		try
-		    execute 'normal! g`[' . (a:type ==# 'line' ? 'V' : 'v') . 'g`]' . l:pasteRegister . 'p'
+		    execute 'silent normal! g`[' . (a:type ==# 'line' ? 'V' : 'v') . 'g`]' . l:pasteRegister . 'p'
 		finally
 		    let &selection = l:save_selection
 		endtry
 	    endif
+	endif
+
+	let l:newLineNum = line("']") - line("'[") + 1
+	if l:previousLineNum >= &report || l:newLineNum >= &report
+	    echomsg printf('Replaced %d line%s', l:previousLineNum, (l:previousLineNum == 1 ? '' : 's')) .
+	    \   (l:previousLineNum == l:newLineNum ? '' : printf(' with %d line%s', l:newLineNum, (l:newLineNum == 1 ? '' : 's')))
 	endif
     finally
 	call setreg('"', l:save_reg, l:save_regmode)

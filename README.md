@@ -130,6 +130,9 @@ HISTORY
 
 ##### 1.43    RELEASEME
 - BUG: {count}grr does not repeat the count.
+- Suppress "--No lines in buffer--" message when replacing the entire buffer,
+  and combine "Deleted N lines" / "Added M lines" into a single message that
+  is given when either previous or new amount of lines reaches 'report'.
 
 ##### 1.42    29-Oct-2014
 - BUG: Previous version 1.41 broke replacement of single character with
