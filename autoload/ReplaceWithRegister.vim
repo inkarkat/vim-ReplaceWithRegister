@@ -9,7 +9,6 @@
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
-"
 
 function! ReplaceWithRegister#SetRegister()
     let s:register = v:register
@@ -81,11 +80,11 @@ function! s:ReplaceWithRegister( type )
 	" happened earlier in the mappings.
 	" To get the expression result into the buffer, we use the unnamed
 	" register; this will be restored, anyway.
-	call setreg('"', g:ReplaceWithRegister_expr)
-	call s:CorrectForRegtype(a:type, '"', getregtype('"'), g:ReplaceWithRegister_expr)
+	call setreg('"', g:ReplaceWithRegister#expr)
+	call s:CorrectForRegtype(a:type, '"', getregtype('"'), g:ReplaceWithRegister#expr)
 	" Must not clean up the global temp variable to allow command
 	" repetition.
-	"unlet g:ReplaceWithRegister_expr
+	"unlet g:ReplaceWithRegister#expr
 	let l:pasteRegister = ''
     endif
     try
@@ -172,7 +171,7 @@ function! ReplaceWithRegister#OperatorExpression()
 
     if v:register ==# '='
 	" Must evaluate the expression register outside of a function.
-	let l:keys = ":let g:ReplaceWithRegister_expr = getreg('=')\<CR>" . l:keys
+	let l:keys = ":let g:ReplaceWithRegister#expr = getreg('=')\<CR>" . l:keys
     endif
 
     return l:keys

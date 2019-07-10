@@ -24,7 +24,7 @@ nnoremap <expr> <Plug>ReplaceWithRegisterOperator ReplaceWithRegister#OperatorEx
 " . command re-invokes 'opfunc', the expression isn't re-evaluated, an
 " inconsistency with the other mappings. We creatively use repeat.vim to sneak
 " in the expression evaluation then.
-nnoremap <silent> <Plug>ReplaceWithRegisterExpressionSpecial :<C-u>let g:ReplaceWithRegister_expr = getreg('=')<Bar>execute 'normal!' v:count1 . '.'<CR>
+nnoremap <silent> <Plug>ReplaceWithRegisterExpressionSpecial :<C-u>let g:ReplaceWithRegister#expr = getreg('=')<Bar>execute 'normal!' v:count1 . '.'<CR>
 
 " This mapping needs repeat.vim to be repeatable, because it consists of
 " multiple steps (visual selection + 'c' command inside
@@ -34,7 +34,7 @@ nnoremap <silent> <Plug>ReplaceWithRegisterLine
 \execute 'silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterLine", v:register)'<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
 \if ReplaceWithRegister#IsExprReg()<Bar>
-\    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
+\    let g:ReplaceWithRegister#expr = getreg('=')<Bar>
 \endif<Bar>
 \call ReplaceWithRegister#SetCount()<Bar>
 \execute 'normal! V' . v:count1 . "_\<lt>Esc>"<Bar>
@@ -46,7 +46,7 @@ vnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \execute 'silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)'<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
 \if ReplaceWithRegister#IsExprReg()<Bar>
-\    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
+\    let g:ReplaceWithRegister#expr = getreg('=')<Bar>
 \endif<Bar>
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
 
@@ -62,7 +62,7 @@ nnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \execute 'silent! call repeat#setreg("\<lt>Plug>ReplaceWithRegisterVisual", v:register)'<Bar>
 \call ReplaceWithRegister#SetRegister()<Bar>
 \if ReplaceWithRegister#IsExprReg()<Bar>
-\    let g:ReplaceWithRegister_expr = getreg('=')<Bar>
+\    let g:ReplaceWithRegister#expr = getreg('=')<Bar>
 \endif<Bar>
 \execute 'normal!' ReplaceWithRegister#VisualMode()<Bar>
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
