@@ -64,7 +64,6 @@ RELATED WORKS								     *
 
 ==============================================================================
 USAGE						   *ReplaceWithRegister-usage*
-
 							     *gr* *grr* *v_gr*
 [count]["x]gr{motion}	Replace {motion} text with the contents of register x.
 			Especially when using the unnamed register, this is
