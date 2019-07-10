@@ -5,46 +5,11 @@
 "   - visualrepeat.vim (vimscript #3848) autoload script (optional)
 "   - visualrepeat/reapply.vim autoload script (optional)
 "
-" Copyright: (C) 2011-2016 Ingo Karkat
+" Copyright: (C) 2011-2019 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
 "
-" REVISION	DATE		REMARKS
-"   1.43.011	23-Aug-2016	BUG: {count}grr does not repeat the count.
-"				Add ReplaceWithRegister#SetCount() and new
-"				a:isRepeatCount argument to
-"				ReplaceWithRegister#Operator() that then passes
-"				the stored s:count to repeat#set()..
-"   1.42.010	27-Jun-2014	BUG: Off-by-one error in previously introduced
-"				s:IsOnOrAfter(); actually need to use s:IsAfter().
-"   1.41.009	28-May-2014	Also handle empty exclusive selection and empty
-"				text object (e.g. gri" on "").
-"   1.40.008	18-Apr-2013	Add ReplaceWithRegister#VisualMode() wrapper
-"				around visualrepeat#reapply#VisualMode().
-"   1.32.007	21-Mar-2013	Avoid changing the jumplist.
-"   1.32.006	28-Dec-2012	Minor: Correct lnum for no-modifiable buffer
-"				check.
-"   1.30.005	06-Dec-2011	Retire visualrepeat#set_also(); use
-"				visualrepeat#set() everywhere.
-"   1.30.004	21-Oct-2011	Employ repeat.vim to have the expression
-"				re-evaluated on repetition of the
-"				operator-pending mapping.
-"   1.30.003	30-Sep-2011	Avoid clobbering of expression register so that
-"				a command repeat is able to re-evaluate the
-"				expression.
-"				Undo parallel <Plug>ReplaceWithRegisterRepeat...
-"				mappings, as this is now handled by the enhanced
-"				repeat.vim plugin.
-"   1.30.002	27-Sep-2011	Adaptations for blockwise replace:
-"				- If the register contains just a single line,
-"				  temporarily duplicate the line to match the
-"				  height of the blockwise selection.
-"				- If the register contains multiple lines, paste
-"				  as blockwise.
-"   1.30.001	24-Sep-2011	Moved functions from plugin to separate autoload
-"				script.
-"				file creation
 
 function! ReplaceWithRegister#SetRegister()
     let s:register = v:register
