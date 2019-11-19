@@ -128,7 +128,7 @@ below).
 HISTORY
 ------------------------------------------------------------------------------
 
-##### 1.43    RELEASEME
+##### 1.43    19-Nov-2019
 - BUG: {count}grr does not repeat the count.
 - Suppress "--No lines in buffer--" message when replacing the entire buffer,
   and combine "Deleted N lines" / "Added M lines" into a single message that
