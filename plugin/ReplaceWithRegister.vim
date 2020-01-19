@@ -14,6 +14,10 @@ if exists('g:loaded_ReplaceWithRegister') || (v:version < 700)
 endif
 let g:loaded_ReplaceWithRegister = 1
 
+if !exists('g:ReplaceWithRegisterDefaultMappings')
+    let g:ReplaceWithRegisterDefaultMappings = 1
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -68,13 +72,13 @@ nnoremap <silent> <Plug>ReplaceWithRegisterVisual
 \call ReplaceWithRegister#Operator('visual', "\<lt>Plug>ReplaceWithRegisterVisual")<CR>
 
 
-if ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'n')
+if g:ReplaceWithRegisterDefaultMappings && ! hasmapto('<Plug>ReplaceWithRegisterOperator', 'n')
     nmap gr <Plug>ReplaceWithRegisterOperator
 endif
-if ! hasmapto('<Plug>ReplaceWithRegisterLine', 'n')
+if g:ReplaceWithRegisterDefaultMappings && ! hasmapto('<Plug>ReplaceWithRegisterLine', 'n')
     nmap grr <Plug>ReplaceWithRegisterLine
 endif
-if ! hasmapto('<Plug>ReplaceWithRegisterVisual', 'x')
+if g:ReplaceWithRegisterDefaultMappings && ! hasmapto('<Plug>ReplaceWithRegisterVisual', 'x')
     xmap gr <Plug>ReplaceWithRegisterVisual
 endif
 

@@ -104,6 +104,10 @@ If you want to use different mappings, map your keys to the
     nmap <Leader>rr <Plug>ReplaceWithRegisterLine
     xmap <Leader>r  <Plug>ReplaceWithRegisterVisual
 
+Or turn off all default mappings by setting:
+
+    let g:ReplaceWithRegisterDefaultMappings = 0
+
 LIMITATIONS
 ------------------------------------------------------------------------------
 
