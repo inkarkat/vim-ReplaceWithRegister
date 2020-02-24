@@ -86,6 +86,8 @@ To uninstall, use the :RmVimball command.
 ### DEPENDENCIES
 
 - Requires Vim 7.0 or higher.
+- ingo-library.vim plugin ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)), version 1.038 or higher
+  (optional).
 - repeat.vim ([vimscript #2136](http://www.vim.org/scripts/script.php?script_id=2136)) plugin (optional)
   To support repetition with a register other than the default register, you
   need version 1.1 or later.
@@ -127,6 +129,10 @@ below).
 
 HISTORY
 ------------------------------------------------------------------------------
+
+##### 1.44    RELEASEME
+- The gr custom operator doesn't clobber the previous visual selection any
+  longer (if the optional ingo-library.vim ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)) is installed).
 
 ##### 1.43    19-Nov-2019
 - BUG: {count}grr does not repeat the count.
@@ -209,7 +215,7 @@ insert mode.
 - Started development.
 
 ------------------------------------------------------------------------------
-Copyright: (C) 2008-2019 Ingo Karkat -
+Copyright: (C) 2008-2020 Ingo Karkat -
 The [VIM LICENSE](http://vimdoc.sourceforge.net/htmldoc/uganda.html#license) applies to this plugin.
 
 Maintainer:     Ingo Karkat &lt;ingo@karkat.de&gt;

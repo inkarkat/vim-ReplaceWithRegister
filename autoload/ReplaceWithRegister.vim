@@ -1,10 +1,11 @@
 " ReplaceWithRegister.vim: Replace text with the contents of a register.
 "
 " DEPENDENCIES:
+"   - ingo-library.vim plugin (optional)
 "   - repeat.vim (vimscript #2136) plugin (optional)
 "   - visualrepeat.vim (vimscript #3848) plugin (optional)
 "
-" Copyright: (C) 2011-2019 Ingo Karkat
+" Copyright: (C) 2011-2020 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -106,12 +107,14 @@ function! s:ReplaceWithRegister( type )
 	    else
 		" Note: Need to use an "inclusive" selection to make `] include
 		" the last moved-over character.
+		let l:save_visualarea = [getpos("'<"), getpos("'>"), visualmode()]
 		let l:save_selection = &selection
 		set selection=inclusive
 		try
 		    execute 'silent normal! g`[' . (a:type ==# 'line' ? 'V' : 'v') . 'g`]' . l:pasteRegister . 'p'
 		finally
 		    let &selection = l:save_selection
+		    silent! call call('ingo#selection#Set', l:save_visualarea)
 		endtry
 	    endif
 	endif
