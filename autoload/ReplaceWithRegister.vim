@@ -50,7 +50,7 @@ function! s:CorrectForRegtype( type, register, regType, pasteText )
 	" and the replacement would put an additional newline to the end.
 	" To fix that, we temporarily remove the trailing newline character from
 	" the register contents and set the register type to characterwise yank.
-	call setreg(a:register, strpart(a:pasteText, 0, len(a:pasteText) - 1), 'v')
+	call setreg(a:register, a:pasteText[0:-2], 'v')
 
 	return 1
     endif
