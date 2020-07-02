@@ -159,6 +159,10 @@ function! ReplaceWithRegister#Operator( type, ... )
 endfunction
 function! ReplaceWithRegister#OperatorExpression()
     call ReplaceWithRegister#SetRegister()
+
+    " Note: Could use
+    " ingo#mapmaker#OpfuncExpression('ReplaceWithRegister#Operator'), but avoid
+    " dependency to ingo-library for now.
     set opfunc=ReplaceWithRegister#Operator
 
     let l:keys = 'g@'
