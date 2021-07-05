@@ -5,7 +5,7 @@
 "   - repeat.vim (vimscript #2136) plugin (optional)
 "   - visualrepeat.vim (vimscript #3848) plugin (optional)
 "
-" Copyright: (C) 2011-2020 Ingo Karkat
+" Copyright: (C) 2011-2021 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -142,6 +142,12 @@ function! ReplaceWithRegister#Operator( type, ... )
 	    " %, # and =, because their regtype is always 'v'.
 	    call setreg(s:register, l:pasteText, l:regType)
 	endif
+
+	if exists('s:save_virtualedit')
+	    let &virtualedit = s:save_virtualedit
+	    unlet s:save_virtualedit
+	    autocmd! TempVirtualEdit
+	endif
     endtry
 
     if a:0
@@ -157,8 +163,20 @@ function! ReplaceWithRegister#Operator( type, ... )
     endif
     silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
 endfunction
+function! s:HasVirtualEdit() abort
+    silent! return ingo#option#ContainsOneOf(&virtualedit, ['all', 'onemore'])
+    return 0
+endfunction
 function! ReplaceWithRegister#OperatorExpression()
     call ReplaceWithRegister#SetRegister()
+
+    if ! s:HasVirtualEdit()
+	let s:save_virtualedit = &virtualedit
+	set virtualedit=onemore
+	augroup TempVirtualEdit
+	    execute 'autocmd! CursorMoved * set virtualedit=' . s:save_virtualedit . ' | autocmd! TempVirtualEdit'
+	augroup END
+    endif
 
     " Note: Could use
     " ingo#mapmaker#OpfuncExpression('ReplaceWithRegister#Operator'), but avoid

@@ -133,6 +133,9 @@ HISTORY
 ##### 1.44    RELEASEME
 - The gr custom operator doesn't clobber the previous visual selection any
   longer (if the optional ingo-library.vim ([vimscript #4433](http://www.vim.org/scripts/script.php?script_id=4433)) is installed).
+- BUG: gr{motion} deletes one additional character when the moved-over text
+  starts at the end of a line and 'virtualedit' is off. (Reported by
+  sawogus29.) Need to temporarily :set virtualedit=onemore.
 
 ##### 1.43    19-Nov-2019
 - BUG: {count}grr does not repeat the count.
@@ -215,7 +218,7 @@ insert mode.
 - Started development.
 
 ------------------------------------------------------------------------------
-Copyright: (C) 2008-2020 Ingo Karkat -
+Copyright: (C) 2008-2021 Ingo Karkat -
 The [VIM LICENSE](http://vimdoc.sourceforge.net/htmldoc/uganda.html#license) applies to this plugin.
 
 Maintainer:     Ingo Karkat &lt;ingo@karkat.de&gt;
