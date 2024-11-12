@@ -1,10 +1,11 @@
 " ReplaceWithRegister.vim: Replace text with the contents of a register.
 "
 " DEPENDENCIES:
+"   - ingo-library.vim plugin (optional)
 "   - repeat.vim (vimscript #2136) plugin (optional)
 "   - visualrepeat.vim (vimscript #3848) plugin (optional)
 "
-" Copyright: (C) 2011-2019 Ingo Karkat
+" Copyright: (C) 2011-2021 Ingo Karkat
 "   The VIM LICENSE applies to this script; see ':help copyright'.
 "
 " Maintainer:	Ingo Karkat <ingo@karkat.de>
@@ -49,7 +50,7 @@ function! s:CorrectForRegtype( type, register, regType, pasteText )
 	" and the replacement would put an additional newline to the end.
 	" To fix that, we temporarily remove the trailing newline character from
 	" the register contents and set the register type to characterwise yank.
-	call setreg(a:register, strpart(a:pasteText, 0, len(a:pasteText) - 1), 'v')
+	call setreg(a:register, a:pasteText[0:-2], 'v')
 
 	return 1
     endif
@@ -106,12 +107,14 @@ function! s:ReplaceWithRegister( type )
 	    else
 		" Note: Need to use an "inclusive" selection to make `] include
 		" the last moved-over character.
+		let l:save_visualarea = [getpos("'<"), getpos("'>"), visualmode()]
 		let l:save_selection = &selection
 		set selection=inclusive
 		try
 		    execute 'silent normal! g`[' . (a:type ==# 'line' ? 'V' : 'v') . 'g`]' . l:pasteRegister . 'p'
 		finally
 		    let &selection = l:save_selection
+		    silent! call call('ingo#selection#Set', l:save_visualarea)
 		endtry
 	    endif
 	endif
@@ -139,6 +142,12 @@ function! ReplaceWithRegister#Operator( type, ... )
 	    " %, # and =, because their regtype is always 'v'.
 	    call setreg(s:register, l:pasteText, l:regType)
 	endif
+
+	if exists('s:save_virtualedit')
+	    let &virtualedit = s:save_virtualedit
+	    unlet s:save_virtualedit
+	    autocmd! TempVirtualEdit
+	endif
     endtry
 
     if a:0
@@ -154,8 +163,24 @@ function! ReplaceWithRegister#Operator( type, ... )
     endif
     silent! call visualrepeat#set("\<Plug>ReplaceWithRegisterVisual")
 endfunction
+function! s:HasVirtualEdit() abort
+    silent! return ingo#option#ContainsOneOf(&virtualedit, ['all', 'onemore'])
+    return 0
+endfunction
 function! ReplaceWithRegister#OperatorExpression()
     call ReplaceWithRegister#SetRegister()
+
+    if ! s:HasVirtualEdit()
+	let s:save_virtualedit = &virtualedit
+	set virtualedit=onemore
+	augroup TempVirtualEdit
+	    execute 'autocmd! CursorMoved * set virtualedit=' . s:save_virtualedit . ' | autocmd! TempVirtualEdit'
+	augroup END
+    endif
+
+    " Note: Could use
+    " ingo#mapmaker#OpfuncExpression('ReplaceWithRegister#Operator'), but avoid
+    " dependency to ingo-library for now.
     set opfunc=ReplaceWithRegister#Operator
 
     let l:keys = 'g@'
